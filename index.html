@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="app-header">
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="transactions">Transactions</button>
+            <button class="nav-tab" data-tab="budgets">Budgets</button>
+            <button class="nav-tab" data-tab="goals">Goals</button>
+            <button class="nav-tab" data-tab="statistics">Statistics</button>
+        </nav>
+        <div class="header-actions">
+            <button id="settingsBtn" class="settings-btn" aria-label="Settings">
+                <span class="settings-icon">⚙️</span>
+            </button>
+            <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="dashboard">
+        <div id="transactionsView" class="view active">
+        <h1>Transactions</h1>
+        
+        <div class="filters">
+            <div class="filter-group">
+                <label for="typeFilter">Type</label>
+                <select id="typeFilter">
+                    <option value="All">All</option>
+                    <option value="Income">Income</option>
+                    <option value="Expense">Expense</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="categoryFilter">Category</label>
+                <select id="categoryFilter">
+                    <option value="All">All Categories</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="startDate">Start Date</label>
+                <input type="date" id="startDate">
+            </div>
+            
+            <div class="filter-group">
+                <label for="endDate">End Date</label>
+                <input type="date" id="endDate">
+            </div>
+            
+            <div class="filter-group">
+                <label for="searchInput">Search</label>
+                <input type="text" id="searchInput" placeholder="Search description...">
+            </div>
+            
+            <div class="filter-group filter-actions">
+                <label>&nbsp;</label>
+                <button id="clearFilters" type="button">Clear Filters</button>
+            </div>
+        </div>
+
+        <div class="view-actions">
+            <button id="addTransactionBtn" class="add-transaction-btn">Add Transaction</button>
+            <button id="exportTransactionsBtn" class="export-btn">Export Transactions</button>
+            <label for="importTransactionsInput" class="import-btn">Import Transactions</label>
+            <input type="file" id="importTransactionsInput" accept=".csv" hidden>
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <div id="transactionList" class="transaction-list">
+            <!-- Transactions inserted here -->
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="chart-card">
+                <h3>Spending Timeline</h3>
+                <div class="chart-container">
+                    <canvas id="timelineChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Categories</h3>
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="recurring-section">
+            <div class="recurring-header">
+                <h2>Recurring Templates</h2>
+                <button id="toggleRecurringList" class="toggle-btn">Show</button>
+            </div>
+            <div id="recurringTemplateList" class="recurring-list hidden">
+                <!-- Recurring templates inserted here -->
+            </div>
+        </div>
+        </div>
+
+        <div id="budgetsView" class="view">
+            <h1>Monthly Budgets</h1>
+            
+            <div id="budgetAlertSummary" class="alert-summary hidden">
+                <span class="alert-icon">⚠️</span>
+                <span id="alertSummaryText">0 categories over budget</span>
+            </div>
+            
+            <div class="view-actions">
+                <button id="addBudgetBtn" class="add-budget-btn">Add Budget</button>
+                <button id="exportBudgetsBtn" class="export-btn">Export Budgets</button>
+            </div>
+            
+            <div id="budgetList" class="budget-list">
+                <!-- Budgets inserted here -->
+            </div>
+        </div>
+
+        <div id="goalsView" class="view">
+            <h1>Savings Goals</h1>
+            <button id="addGoalBtn" class="add-goal-btn">Add Goal</button>
+            
+            <div id="goalList" class="goal-list">
+                <!-- Goals inserted here -->
+            </div>
+        </div>
+
+        <div id="statisticsView" class="view">
+            <h1>Statistics</h1>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Average Daily Spending</div>
+                    <div class="metric-value" id="avgDailySpending">$0.00</div>
+                    <div class="metric-subtitle" id="avgDailySubtitle">This month</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-label">vs Last Month</div>
+                    <div class="metric-value" id="monthComparison">
+                        <span id="monthComparisonValue">$0.00</span>
+                        <span class="metric-change" id="monthComparisonChange"></span>
+                    </div>
+                    <div class="metric-subtitle" id="monthComparisonSubtitle">No comparison data</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-label">Best Saving Month</div>
+                    <div class="metric-value" id="bestSavingMonth">—</div>
+                    <div class="metric-subtitle" id="bestSavingSubtitle">Last 6 months</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-label">Spending Trend</div>
+                    <div class="metric-value" id="spendingTrend">—</div>
+                    <div class="metric-subtitle" id="trendSubtitle">3-month average</div>
+                </div>
+            </div>
+            
+            <div class="stats-section">
+                <h2>Top Spending Categories</h2>
+                <p class="stats-subtitle" id="statsMonthLabel">Current Month</p>
+                <div class="chart-container stats-chart-container">
+                    <canvas id="topCategoriesChart"></canvas>
+                </div>
+                <p class="stats-empty hidden" id="statsEmpty">No expense data for this month.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Modal -->
+    <div id="transactionModal" class="modal">
+        <div class="modal-content">
+            <h2 id="transactionModalTitle">Add Transaction</h2>
+            <form id="transactionForm">
+                <div class="form-group">
+                    <label for="desc">Description</label>
+                    <input type="text" id="desc" required placeholder="e.g., Grocery shopping">
+                </div>
+                <div class="form-group">
+                    <label for="amount">Amount ($)</label>
+                    <input type="number" id="amount" min="0.01" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="type">Type</label>
+                    <select id="type" required>
+                        <option value="Expense">Expense</option>
+                        <option value="Income">Income</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <input type="text" id="category" required placeholder="e.g., Food, Rent">
+                </div>
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" required>
+                </div>
+                <div class="form-group recurring-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="isRecurring">
+                        <span>Make this recurring</span>
+                    </label>
+                </div>
+                <div class="form-group recurring-options hidden" id="recurringOptions">
+                    <label for="recurringFrequency">Frequency</label>
+                    <select id="recurringFrequency">
+                        <option value="Weekly">Weekly</option>
+                        <option value="Monthly">Monthly</option>
+                        <option value="Yearly">Yearly</option>
+                    </select>
+                    <div class="next-occurrence" id="nextOccurrence"></div>
+                </div>
+                <div id="transactionError" class="error-message"></div>
+                <div class="modal-actions">
+                    <button type="button" id="cancelTransaction" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Recurring Template Modal -->
+    <div id="editRecurringModal" class="modal">
+        <div class="modal-content">
+            <h2>Edit Recurring Template</h2>
+            <p class="modal-note">Changes apply to future instances only.</p>
+            <form id="editRecurringForm">
+                <input type="hidden" id="editRecurringId">
+                <div class="form-group">
+                    <label for="editRecurringDesc">Description</label>
+                    <input type="text" id="editRecurringDesc" required>
+                </div>
+                <div class="form-group">
+                    <label for="editRecurringAmount">Amount ($)</label>
+                    <input type="number" id="editRecurringAmount" min="0.01" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="editRecurringType">Type</label>
+                    <select id="editRecurringType" required>
+                        <option value="Expense">Expense</option>
+                        <option value="Income">Income</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editRecurringCategory">Category</label>
+                    <input type="text" id="editRecurringCategory" required>
+                </div>
+                <div class="form-group">
+                    <label for="editRecurringFrequency">Frequency</label>
+                    <select id="editRecurringFrequency" required>
+                        <option value="Weekly">Weekly</option>
+                        <option value="Monthly">Monthly</option>
+                        <option value="Yearly">Yearly</option>
+                    </select>
+                </div>
+                <div id="editRecurringError" class="error-message"></div>
+                <div class="modal-actions">
+                    <button type="button" id="cancelEditRecurring" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Recurring Template Modal -->
+    <div id="deleteRecurringModal" class="modal">
+        <div class="modal-content">
+            <h2>Delete Recurring Template</h2>
+            <input type="hidden" id="deleteRecurringId">
+            <p class="delete-message">What would you like to do with existing transactions from this template?</p>
+            <div class="delete-options">
+                <button type="button" id="deleteTemplateOnly" class="btn-secondary">Keep Transactions</button>
+                <button type="button" id="deleteTemplateAndTransactions" class="btn-danger">Delete All</button>
+            </div>
+            <div class="modal-actions">
+                <button type="button" id="cancelDeleteRecurring" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Budget Modal -->
+    <div id="budgetModal" class="modal">
+        <div class="modal-content">
+            <h2 id="budgetModalTitle">Add Budget</h2>
+            <form id="budgetForm">
+                <div class="form-group">
+                    <label for="budgetCategory">Category</label>
+                    <select id="budgetCategory" required>
+                        <!-- Expense categories populated here -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="budgetLimit">Monthly Limit ($)</label>
+                    <input type="number" id="budgetLimit" min="0" step="0.01" required>
+                </div>
+                <div id="budgetError" class="error-message"></div>
+                <div class="modal-actions">
+                    <button type="button" id="cancelBudget" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Contribution Modal -->
+    <div id="contributionModal" class="modal">
+        <div class="modal-content">
+            <h2>Add Contribution</h2>
+            <form id="contributionForm">
+                <div class="form-group">
+                    <label for="contributionGoalName">Goal</label>
+                    <input type="text" id="contributionGoalName" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="contributionAmount">Amount ($)</label>
+                    <input type="number" id="contributionAmount" min="0.01" step="0.01" required>
+                </div>
+                <div id="contributionError" class="error-message"></div>
+                <div class="modal-actions">
+                    <button type="button" id="cancelContribution" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Goal Modal -->
+    <div id="goalModal" class="modal">
+        <div class="modal-content">
+            <h2 id="goalModalTitle">Add Goal</h2>
+            <form id="goalForm">
+                <div class="form-group">
+                    <label for="goalName">Goal Name</label>
+                    <input type="text" id="goalName" required placeholder="e.g., Vacation Fund">
+                </div>
+                <div class="form-group">
+                    <label for="goalCategory">Category</label>
+                    <select id="goalCategory" required>
+                        <option value="Emergency Fund">Emergency Fund</option>
+                        <option value="Vacation">Vacation</option>
+                        <option value="Car">Car</option>
+                        <option value="House">House</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="goalTarget">Target Amount ($)</label>
+                    <input type="number" id="goalTarget" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="goalCurrent">Current Amount ($)</label>
+                    <input type="number" id="goalCurrent" min="0" step="0.01" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="goalDate">Target Date</label>
+                    <input type="date" id="goalDate" required>
+                </div>
+                <div id="goalError" class="error-message"></div>
+                <div class="modal-actions">
+                    <button type="button" id="cancelGoal" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Import Preview Modal -->
+    <div id="importPreviewModal" class="modal">
+        <div class="modal-content import-modal-content">
+            <h2>Import Preview</h2>
+            <p class="import-info" id="importInfo"></p>
+            <div id="importValidationSummary" class="validation-summary hidden"></div>
+            <div id="importError" class="error-message"></div>
+            <div class="import-preview-container">
+                <table id="importPreviewTable" class="import-preview-table">
+                    <thead id="importPreviewHeader"></thead>
+                    <tbody id="importPreviewBody"></tbody>
+                </table>
+            </div>
+            <div class="modal-actions">
+                <button type="button" id="cancelImport" class="btn-secondary">Cancel</button>
+                <button type="button" id="confirmImport" class="btn-primary">Import All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Celebration Modal -->
+    <div id="celebrationModal" class="celebration-modal">
+        <div class="celebration-content">
+            <div class="celebration-checkmark">
+                <svg class="checkmark-svg" viewBox="0 0 52 52">
+                    <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                    <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
+            <h2 class="celebration-title">Goal Achieved!</h2>
+            <p class="celebration-goal-name" id="celebrationGoalName"></p>
+            <p class="celebration-message">Congratulations on reaching your savings goal!</p>
+            <button id="closeCelebration" class="btn-primary celebration-btn">Continue</button>
+        </div>
+        <div class="confetti-container" id="confettiContainer"></div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content settings-modal-content">
+            <h2>Settings</h2>
+            <form id="settingsForm">
+                <div class="form-group">
+                    <label for="currencySelect">Currency</label>
+                    <select id="currencySelect">
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="JPY">JPY (¥)</option>
+                        <option value="CAD">CAD (C$)</option>
+                        <option value="AUD">AUD (A$)</option>
+                        <option value="INR">INR (₹)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dateFormatSelect">Date Format</label>
+                    <select id="dateFormatSelect">
+                        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="weekStartSelect">First Day of Week</label>
+                    <select id="weekStartSelect">
+                        <option value="Sunday">Sunday</option>
+                        <option value="Monday">Monday</option>
+                    </select>
+                </div>
+                <div class="settings-preview">
+                    <p class="preview-label">Preview:</p>
+                    <div class="preview-values">
+                        <span id="currencyPreview">$1,234.56</span>
+                        <span id="datePreview">01/19/2026</span>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="cancelSettings" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Settings</button>
+                </div>
+            </form>
+            
+            <div class="settings-divider"></div>
+            
+            <div class="danger-zone">
+                <h3>Danger Zone</h3>
+                <p class="danger-description">This action cannot be undone. All your data will be permanently deleted.</p>
+                <button type="button" id="resetAllDataBtn" class="btn-danger">Reset All Data</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reset Confirmation Modal -->
+    <div id="resetConfirmModal" class="modal">
+        <div class="modal-content reset-modal-content">
+            <h2>⚠️ Reset All Data</h2>
+            <p class="reset-warning">This will permanently delete:</p>
+            <ul class="reset-list">
+                <li>All transactions</li>
+                <li>All budgets</li>
+                <li>All savings goals</li>
+                <li>All recurring templates</li>
+                <li>All settings</li>
+            </ul>
+            <p class="reset-confirm-text">Type <strong>RESET</strong> to confirm:</p>
+            <input type="text" id="resetConfirmInput" placeholder="Type RESET here" autocomplete="off">
+            <div id="resetError" class="error-message"></div>
+            <div class="modal-actions">
+                <button type="button" id="cancelReset" class="btn-secondary">Cancel</button>
+                <button type="button" id="confirmReset" class="btn-danger" disabled>Delete Everything</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

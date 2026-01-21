@@ -1,0 +1,106 @@
+## Codebase Patterns
+- Uses ES6 modules with `type="module"` script tags
+- CSS variables defined in `:root` for theming (primary: #3EB489, secondary: #E0F7FA)
+- Chart.js included via CDN
+- IIFE pattern used in app.js for encapsulation
+- Views use `.view` class with `.hidden` toggling; nav tabs use `data-view` attribute matching `#viewName-view` id pattern
+- Storage module at `scripts/storage.js`: import with `import Storage from './storage.js'`
+- Storage CRUD: `Storage.getTransactions()`, `Storage.createTransaction(obj)`, `Storage.updateTransaction(id, updates)`, `Storage.deleteTransaction(id)`
+- Same pattern for budgets and goals: `getBudgets/createBudget/updateBudget/deleteBudget`, `getGoals/createGoal/updateGoal/deleteGoal`
+- Categories: `Storage.INCOME_CATEGORIES`, `Storage.EXPENSE_CATEGORIES`
+- Modal pattern: `.modal-overlay.hidden` wrapping `.modal`, use `openModal()`/`closeModal()` in app.js
+
+---
+
+## 2026-01-17 - US-001
+Thread: https://ampcode.com/threads/T-019bcd38-0c95-705b-8909-fdbe7511c5ea
+- Implemented foundational project structure
+- Files created: index.html, styles.css, scripts/app.js
+- **Learnings for future iterations:**
+  - index.html uses semantic HTML5 (header, main, footer, nav)
+  - CSS variables set up for theming with mint green/teal colors
+  - App.js uses IIFE + ES6 module export pattern
+  - Chart.js loaded via CDN before app.js
+---
+
+## 2026-01-17 - US-002
+Thread: https://ampcode.com/threads/T-019bcd39-2ca0-750b-ace8-f76783b3820a
+- Implemented header and navigation system
+- Files changed: index.html, styles.css, scripts/app.js
+- **Learnings for future iterations:**
+  - Views use `.view` class with `.hidden` toggling for visibility
+  - Navigation tabs use `data-view` attribute to target corresponding view by id (e.g., `data-view="dashboard"` targets `#dashboard-view`)
+  - Date formatting uses `toLocaleDateString('en-US', options)` with long month format
+  - Touch targets use `min-width: 44px; min-height: 44px` for accessibility
+  - Dark mode toggle icons use `.hidden` class toggling (full implementation in US-026)
+---
+
+## 2026-01-17 - US-003
+Thread: https://ampcode.com/threads/T-019bcd3a-c7a3-775d-882c-7aad0f79c980
+- Implemented data storage layer with localStorage persistence
+- Files created: scripts/storage.js
+- Files changed: scripts/app.js
+- **Learnings for future iterations:**
+  - Storage module uses IIFE pattern with ES6 export, exposed to `window.Storage` for console testing
+  - Unique IDs use timestamp + random string: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  - All CRUD operations return the affected object (or null/false on failure)
+  - Income categories: Salary, Freelance, Investment, Other
+  - Expense categories: Housing, Food, Transport, Entertainment, Healthcare, Shopping, Bills, Other
+  - Data keys: `finance_transactions`, `finance_budgets`, `finance_goals`
+---
+
+## 2026-01-17 - US-004
+Thread: https://ampcode.com/threads/T-019bcd3c-a058-70dd-aa27-c9a9c8e4c5f7
+- Implemented sample data generator function
+- Files changed: scripts/storage.js, scripts/app.js
+- **Learnings for future iterations:**
+  - `Storage.loadSampleData()` generates sample data only if `hasData()` returns false
+  - Sample data includes 40+ transactions spanning 6 months, 4 budgets, and 3 goals
+  - Transaction structure: `{ id, type, category, amount, date, description, tags, createdAt }`
+  - Budget structure: `{ id, category, limit, createdAt }`
+  - Goal structure: `{ id, name, targetAmount, currentAmount, targetDate, createdAt }`
+  - App calls `loadSampleData()` during initialization
+---
+
+## 2026-01-17 - US-005
+Thread: https://ampcode.com/threads/T-019bcd3e-44dd-7312-9123-9d8cf21d54aa
+- Implemented Add Transaction modal structure with overlay backdrop
+- Files changed: index.html, styles.css, scripts/app.js
+- **Learnings for future iterations:**
+  - Modal uses `.modal-overlay.hidden` pattern for show/hide (remove/add hidden class)
+  - Modal structure: `.modal-overlay` > `.modal` > `.modal-header` + `.modal-body`
+  - Modal opens via `openModal()`, closes via `closeModal()` functions in app.js
+  - Close triggers: X button click, backdrop click, Escape key
+  - Modal z-index is 1000 (above header z-index of 100)
+---
+
+## 2026-01-17 - US-006
+Thread: https://ampcode.com/threads/T-019bcd3f-fe83-774d-876e-88088ca8a71e
+- Implemented Add Transaction modal form with all required fields
+- Files changed: index.html, styles.css, scripts/app.js
+- **Learnings for future iterations:**
+  - Form uses `populateCategories(type)` to dynamically switch between income/expense categories
+  - Form validation uses `validateForm()` which shows inline errors with `.form-error` spans
+  - Form reset happens in `openModal()` via `resetForm()` which also sets date to today
+  - Transaction type radio buttons trigger category dropdown update via change event
+  - Form submission creates transaction via `Storage.createTransaction(transaction)` and closes modal
+---
+
+## 2026-01-17 - US-007
+Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
+- Implemented transaction list view with rendering from storage
+- Files changed: scripts/app.js
+- Added `formatCurrency()` helper using Intl.NumberFormat for USD formatting
+- Added `formatShortDate()` helper for short date display (e.g., "Jan 17, 2026")
+- Added `renderTransactions()` function that: sorts by date (newest first), displays all transactions, handles empty state
+- Transaction items display: date, description, category, amount (with +/- prefix)
+- Amount color-coded via CSS classes (.income = green #4CAF50, .expense = red #F44336)
+- Transaction count updates dynamically with singular/plural handling
+- renderTransactions() called on init and after form submit
+- **Learnings for future iterations:**
+  - Currency formatting uses `Intl.NumberFormat` with USD currency style
+  - Transaction list uses grid layout (date 100px, description 1fr, category 120px, amount 100px)
+  - When adding new transaction items, remove existing items with `querySelectorAll('.transaction-item')` to avoid duplicates
+  - Sort date comparison uses `new Date(b.date) - new Date(a.date)` for descending order
+  - Empty state message lives in HTML with ID, toggled via `.hidden` class
+---

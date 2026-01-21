@@ -1,0 +1,606 @@
+{
+  "project": "Personal Finance Dashboard",
+  "branchName": "ralph/finance-dashboard",
+  "description": "A comprehensive personal finance management application built with vanilla HTML, CSS, and JavaScript. Track income/expenses, set budgets, create savings goals, and visualize financial health through interactive charts.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Project Setup",
+      "description": "As a developer, I need the foundational project structure so that I can build the finance dashboard with proper organization.",
+      "acceptanceCriteria": [
+        "Create index.html with semantic HTML5 structure (header, main, footer, nav)",
+        "Create styles.css with CSS variables for theming (mint green/teal: primary #3EB489, secondary #E0F7FA)",
+        "Create scripts/app.js using module pattern (IIFE or ES6 modules)",
+        "Include Chart.js via CDN link in index.html",
+        "Page loads without console errors",
+        "Verify in browser: blank page loads, no console errors"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Header and Navigation",
+      "description": "As a user, I want a clear header and navigation so that I can easily switch between different sections of the app.",
+      "acceptanceCriteria": [
+        "App title 'Finance Dashboard' displayed prominently in header",
+        "Navigation tabs: Dashboard, Transactions, Budgets, Goals (horizontal layout)",
+        "'Add Transaction' button in top right corner with prominent styling (primary color)",
+        "Dark mode toggle button (sun/moon icon)",
+        "Current date displayed in header (format: 'January 17, 2026')",
+        "Header is sticky (position: sticky, top: 0)",
+        "Clicking tabs switches visible view/section (only active view shown)",
+        "Active tab visually indicated (underline or background change)",
+        "Touch targets minimum 44px × 44px",
+        "Verify in browser: header sticky, tabs switch views, responsive on mobile"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Data Storage Layer",
+      "description": "As a developer, I need a robust data storage module so that all financial data persists between sessions.",
+      "acceptanceCriteria": [
+        "Create scripts/storage.js with Storage module",
+        "Define income categories: Salary, Freelance, Investment, Other",
+        "Define expense categories: Housing, Food, Transport, Entertainment, Healthcare, Shopping, Bills, Other",
+        "Implement CRUD operations: create, read, update, delete for transactions, budgets, and goals",
+        "All data stored in localStorage with JSON serialization",
+        "Unique ID generation for each record (timestamp-based)",
+        "Data loads automatically on page refresh",
+        "Verify: Add transaction via console, refresh page, transaction still exists"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Sample Data Generator",
+      "description": "As a developer, I need sample data to test the application without manually entering transactions.",
+      "acceptanceCriteria": [
+        "Create loadSampleData() function in storage.js",
+        "Generate at least 20 transactions spanning last 6 months",
+        "Include mix of income (Salary, Freelance) and expense transactions across all categories",
+        "Generate 3-4 sample budgets for expense categories",
+        "Generate 2-3 sample savings goals",
+        "Function only loads data if localStorage is empty (prevent duplicates)",
+        "Verify: Clear localStorage, reload page, sample data appears"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Add Transaction Modal - Structure",
+      "description": "As a user, I want a modal form to add new transactions so that I can record my income and expenses.",
+      "acceptanceCriteria": [
+        "Modal HTML structure in index.html with overlay backdrop",
+        "Modal opens when 'Add Transaction' button clicked",
+        "Close button (X) in modal header closes modal",
+        "Click outside modal (on backdrop) closes modal",
+        "Escape key closes modal",
+        "Modal hidden by default (display: none or hidden class)",
+        "Verify in browser: modal opens/closes correctly"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Add Transaction Modal - Form",
+      "description": "As a user, I want to fill out transaction details in the modal form.",
+      "acceptanceCriteria": [
+        "Form fields: type (income/expense radio buttons), amount (number input), category (dropdown), date (date picker), description (text input), tags (text input)",
+        "Category dropdown shows income categories when 'income' selected",
+        "Category dropdown shows expense categories when 'expense' selected",
+        "Date field defaults to today's date",
+        "Amount validation: must be positive number, show error if invalid",
+        "Category required: show error if not selected",
+        "Submit button saves transaction to storage and closes modal",
+        "Form resets after successful save",
+        "Verify in browser: validation shows errors, transaction saves correctly"
+      ],
+      "priority": 6,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Transaction List View",
+      "description": "As a user, I want to see all my transactions in a list so that I can review my financial activity.",
+      "acceptanceCriteria": [
+        "Transactions view/tab shows list of all transactions",
+        "Display columns: date, description, category, amount",
+        "Amount color-coded: green (#4CAF50) for income, red (#F44336) for expenses",
+        "Transactions sorted by date, newest first",
+        "Transaction count displayed: 'Showing X transactions'",
+        "Empty state message when no transactions: 'No transactions yet. Add your first transaction!'",
+        "Verify in browser: transactions display correctly, sorted by date"
+      ],
+      "priority": 7,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Transaction Edit and Delete",
+      "description": "As a user, I want to edit or delete transactions so that I can correct mistakes.",
+      "acceptanceCriteria": [
+        "Each transaction row has Edit button (pencil icon)",
+        "Each transaction row has Delete button (trash icon)",
+        "Edit opens modal pre-filled with transaction data",
+        "Editing transaction updates it in storage",
+        "Delete shows confirmation dialog before removing",
+        "Delete removes transaction from storage and updates list",
+        "Verify in browser: edit updates transaction, delete removes with confirmation"
+      ],
+      "priority": 8,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Dashboard Summary Cards",
+      "description": "As a user, I want to see summary cards showing my financial overview for the current month.",
+      "acceptanceCriteria": [
+        "Four summary cards in grid layout on Dashboard view",
+        "Card 1: 'Total Income' - sum of income for current month (green)",
+        "Card 2: 'Total Expenses' - sum of expenses for current month (red)",
+        "Card 3: 'Net Savings' - income minus expenses (blue)",
+        "Card 4: 'Savings Rate' - (net savings / income) × 100 as percentage (purple)",
+        "Handle edge case: 0 income shows 0% savings rate (not NaN)",
+        "Numbers formatted with currency symbol ($) and thousands separator",
+        "Verify in browser: numbers calculate correctly from transactions"
+      ],
+      "priority": 9,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "Summary Cards Real-time Updates",
+      "description": "As a user, I want summary cards to update immediately when transactions change.",
+      "acceptanceCriteria": [
+        "Cards update when new transaction is added",
+        "Cards update when transaction is edited",
+        "Cards update when transaction is deleted",
+        "No page refresh required for updates",
+        "Each card has an icon (use emoji or Unicode: 💰 📈 📉 🐷 %)",
+        "Verify in browser: add/edit/delete transaction, cards update instantly"
+      ],
+      "priority": 10,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Expense by Category Chart",
+      "description": "As a user, I want to see a pie chart of my expenses by category so that I can understand where my money goes.",
+      "acceptanceCriteria": [
+        "Doughnut chart rendered using Chart.js on Dashboard",
+        "Shows expense breakdown by category for current month",
+        "Only categories with expenses > 0 are shown",
+        "Each category has distinct color",
+        "Hover tooltip shows: category name, amount, and percentage",
+        "Legend displayed below chart with category names",
+        "Empty state if no expenses: display message instead of chart",
+        "Verify in browser: chart renders, hover shows tooltips"
+      ],
+      "priority": 11,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "title": "Income vs Expenses Timeline Chart",
+      "description": "As a user, I want to see a timeline chart comparing income and expenses over the last 6 months.",
+      "acceptanceCriteria": [
+        "Line chart rendered using Chart.js on Dashboard",
+        "Shows data for last 6 months including current month",
+        "Two lines: income (green #4CAF50) and expenses (red #F44336)",
+        "X-axis: month names (e.g., 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan')",
+        "Y-axis: amount in currency, auto-scaled",
+        "Tooltip on hover shows exact values for both lines",
+        "Legend indicating income vs expenses",
+        "Handle months with no data: show as 0",
+        "Verify in browser: chart displays 6 months, lines visible, hover works"
+      ],
+      "priority": 12,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "Charts Update on Data Change",
+      "description": "As a user, I want charts to update when transaction data changes.",
+      "acceptanceCriteria": [
+        "Expense category chart updates when transactions added/edited/deleted",
+        "Timeline chart updates when transactions added/edited/deleted",
+        "Charts responsive to container width (resize on window resize)",
+        "Smooth chart animations on update",
+        "Verify in browser: add transaction, both charts update without refresh"
+      ],
+      "priority": 13,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-014",
+      "title": "Transaction Filters - Type and Category",
+      "description": "As a user, I want to filter transactions by type and category.",
+      "acceptanceCriteria": [
+        "Filter section above transaction list",
+        "Filter by type: dropdown with 'All', 'Income', 'Expense'",
+        "Filter by category: dropdown populated with all categories",
+        "Filters apply immediately on selection (no submit button needed)",
+        "Status text: 'Showing X of Y transactions'",
+        "Empty result: show message 'No transactions match your filters'",
+        "Verify in browser: type and category filters work correctly"
+      ],
+      "priority": 14,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-015",
+      "title": "Transaction Filters - Date and Search",
+      "description": "As a user, I want to filter transactions by date range and search by description.",
+      "acceptanceCriteria": [
+        "Filter by date range: start date and end date pickers",
+        "Search by description: text input with instant filtering (on keyup, debounced 300ms)",
+        "Search is case-insensitive",
+        "'Clear Filters' button resets all filters to default",
+        "All filters work combined (multiple filters at once)",
+        "Filters persist in view until cleared",
+        "Verify in browser: date range, search, and clear filters work"
+      ],
+      "priority": 15,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-016",
+      "title": "Monthly Budget Setup",
+      "description": "As a user, I want to set monthly budgets for expense categories.",
+      "acceptanceCriteria": [
+        "Budgets view/tab accessible from navigation",
+        "'Add Budget' button opens form/modal",
+        "Budget form: category dropdown (expense categories only), monthly limit (number input)",
+        "Only one budget per category allowed (show error if duplicate attempted)",
+        "Budget saves to storage",
+        "Display list of all budgets with: category name, budgeted amount",
+        "Edit and Delete buttons for each budget",
+        "Delete requires confirmation",
+        "Verify in browser: budgets save, edit, delete correctly"
+      ],
+      "priority": 16,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-017",
+      "title": "Budget Progress Tracking",
+      "description": "As a user, I want to see how much I've spent against each budget.",
+      "acceptanceCriteria": [
+        "Each budget shows: spent amount calculated from current month transactions in that category",
+        "Progress bar for each budget: shows spent/budgeted ratio",
+        "Progress bar color: green (<80%), yellow (80-99%), red (≥100%)",
+        "Text showing: '$X of $Y spent' or 'X% of budget used'",
+        "Progress updates when transactions are added/edited/deleted",
+        "Verify in browser: progress bars show correct percentages, colors update"
+      ],
+      "priority": 17,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-018",
+      "title": "Budget Alerts",
+      "description": "As a user, I want visual alerts when I approach or exceed my budgets.",
+      "acceptanceCriteria": [
+        "Warning indicator (yellow/orange) when spending reaches 80% of budget",
+        "Alert indicator (red) when spending reaches 100% or more",
+        "Icon or badge on budget item showing warning/alert status",
+        "Summary card on Dashboard: 'Categories Over Budget' with count",
+        "Alert status updates immediately when transactions change",
+        "Verify in browser: alerts show at 80% and 100% thresholds"
+      ],
+      "priority": 18,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-019",
+      "title": "Savings Goals Setup",
+      "description": "As a user, I want to create savings goals to track progress toward financial objectives.",
+      "acceptanceCriteria": [
+        "Goals view/tab accessible from navigation",
+        "'Add Goal' button opens form/modal",
+        "Goal form fields: name (text), target amount (number), current amount (number, default 0), target date (date picker), category (dropdown)",
+        "Goal categories: Emergency Fund, Vacation, Car, House, Other",
+        "Goal saves to storage",
+        "Display list of goals with: name, current/target amounts",
+        "Edit and Delete buttons for each goal",
+        "Verify in browser: goals save, edit, delete correctly"
+      ],
+      "priority": 19,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-020",
+      "title": "Goal Progress Display",
+      "description": "As a user, I want to see visual progress for each savings goal.",
+      "acceptanceCriteria": [
+        "Progress bar shows percentage complete (current/target × 100)",
+        "Days remaining countdown calculated from today to target date",
+        "'Add Contribution' button for each goal",
+        "Contribution modal: amount input, adds to current amount",
+        "Progress updates after contribution added",
+        "Verify in browser: progress bar, days remaining, contributions work"
+      ],
+      "priority": 20,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-021",
+      "title": "Goal Status Tracking",
+      "description": "As a user, I want visual indicators showing if I'm on track to meet my goals.",
+      "acceptanceCriteria": [
+        "Status color coding: Green (on track), Yellow (at risk: 10-30% behind), Red (behind: >30%)",
+        "On track calculated by: current progress ≥ expected progress based on time elapsed",
+        "'Required monthly contribution' displayed: (target - current) / months remaining",
+        "Handle edge case: past target date shows 'Overdue' status",
+        "Status badge visible on each goal card",
+        "Verify in browser: status calculates correctly based on time and progress"
+      ],
+      "priority": 21,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-022",
+      "title": "Goal Completion Celebration",
+      "description": "As a user, I want a celebration animation when I complete a savings goal.",
+      "acceptanceCriteria": [
+        "Celebration animation triggers when goal reaches 100%",
+        "Animation: confetti effect, checkmark animation, or success modal",
+        "Animation triggers on contribution that completes goal",
+        "Completed goals visually distinct (checkmark icon, different color)",
+        "Verify in browser: add contribution to reach 100%, animation triggers"
+      ],
+      "priority": 22,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-023",
+      "title": "Export to CSV",
+      "description": "As a user, I want to export my transactions and budgets to CSV files.",
+      "acceptanceCriteria": [
+        "'Export Transactions' button in Transactions view",
+        "'Export Budgets' button in Budgets view",
+        "Transactions CSV columns: Date, Type, Category, Amount, Description, Tags",
+        "Budgets CSV columns: Category, Budget Limit, Spent, Remaining",
+        "Filename includes date: transactions_2026-01-17.csv, budgets_2026-01-17.csv",
+        "CSV uses proper formatting (quoted strings, escaped commas)",
+        "Empty data shows message: 'No data to export'",
+        "Verify: download CSV, open in spreadsheet, all data correct"
+      ],
+      "priority": 23,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-024",
+      "title": "Import from CSV - File Upload",
+      "description": "As a user, I want to upload a CSV file to import transactions.",
+      "acceptanceCriteria": [
+        "'Import Transactions' button in Transactions view",
+        "File input accepts only .csv files",
+        "Parse CSV file on selection",
+        "Show preview table of parsed data (first 10 rows)",
+        "Preview shows all columns from CSV",
+        "Error handling for malformed CSV: show error message",
+        "Verify in browser: upload CSV, preview displays correctly"
+      ],
+      "priority": 24,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-025",
+      "title": "Import from CSV - Validation and Save",
+      "description": "As a user, I want to validate and save imported transactions.",
+      "acceptanceCriteria": [
+        "Validation: check required fields (amount, category, date)",
+        "Invalid rows highlighted in red with error message",
+        "Duplicate detection: flag transactions matching existing date + amount + description",
+        "Duplicates shown with warning indicator",
+        "'Import' button saves valid transactions to storage",
+        "'Cancel' button aborts import",
+        "Success message: 'Imported X transactions'",
+        "Verify in browser: validation works, duplicates flagged, import saves"
+      ],
+      "priority": 25,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-026",
+      "title": "Dark Mode Toggle",
+      "description": "As a user, I want to toggle between light and dark themes.",
+      "acceptanceCriteria": [
+        "Toggle button in header (sun/moon icon)",
+        "Dark mode: background #1a1a2a, surface #2d2d3d, light text",
+        "Light mode: white background, dark text",
+        "Theme preference saved to localStorage",
+        "Theme loads from localStorage on page load",
+        "Smooth CSS transition when switching (0.3s)",
+        "Verify in browser: toggle works, preference persists after refresh"
+      ],
+      "priority": 26,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-027",
+      "title": "Dark Mode - Full Styling",
+      "description": "As a user, I want all app elements to be properly styled in dark mode.",
+      "acceptanceCriteria": [
+        "All text readable in dark mode (sufficient contrast)",
+        "Form inputs, modals, buttons styled for dark mode",
+        "Cards and containers use dark surface color",
+        "Chart.js charts adapt: light gridlines, light labels, visible data points",
+        "Icons and borders visible in dark mode",
+        "Verify in browser: switch to dark mode, all content readable, charts visible"
+      ],
+      "priority": 27,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-028",
+      "title": "Responsive Design - Mobile",
+      "description": "As a user, I want the app to work well on mobile devices (375px width).",
+      "acceptanceCriteria": [
+        "Single column layout at 375px width",
+        "Summary cards stack vertically",
+        "Charts full-width",
+        "Transaction table converts to card layout",
+        "Navigation: hamburger menu or horizontal scrollable tabs",
+        "Modals take full screen width",
+        "Minimum 16px body text",
+        "No horizontal scroll",
+        "Verify in browser: test at 375px width, all features accessible"
+      ],
+      "priority": 28,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-029",
+      "title": "Responsive Design - Tablet and Desktop",
+      "description": "As a user, I want the app to use available space on larger screens.",
+      "acceptanceCriteria": [
+        "Tablet (768px): 2-column grid for summary cards",
+        "Tablet: charts side by side where appropriate",
+        "Desktop (1440px+): 3-4 column grid for cards",
+        "Desktop: dashboard overview layout with charts in row",
+        "All touch targets minimum 44px × 44px",
+        "Charts resize responsively",
+        "Verify in browser: test at 768px and 1440px widths"
+      ],
+      "priority": 29,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-030",
+      "title": "Statistics - Top Spending Categories",
+      "description": "As a user, I want to see which categories I spend the most on.",
+      "acceptanceCriteria": [
+        "Statistics section on Dashboard or separate tab",
+        "Horizontal bar chart showing top 5 expense categories for current month",
+        "Chart rendered using Chart.js",
+        "Categories ordered by amount (highest first)",
+        "Tooltip shows category name and amount",
+        "Updates when transactions change",
+        "Verify in browser: bar chart renders correctly"
+      ],
+      "priority": 30,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-031",
+      "title": "Statistics - Spending Metrics",
+      "description": "As a user, I want to see spending metrics and comparisons.",
+      "acceptanceCriteria": [
+        "Average daily spending: current month expenses / days elapsed in month",
+        "Month comparison: this month vs last month with percentage change",
+        "Up/down arrow indicating increase or decrease",
+        "Best saving month: highest net savings in last 6 months with month name",
+        "Spending trend: 'Increasing' or 'Decreasing' based on 3-month moving average",
+        "Handle first month of usage gracefully (no comparison data)",
+        "Verify in browser: all calculations display correctly"
+      ],
+      "priority": 31,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-032",
+      "title": "Recurring Transactions - Setup",
+      "description": "As a user, I want to mark transactions as recurring.",
+      "acceptanceCriteria": [
+        "Checkbox in Add Transaction form: 'Make this recurring'",
+        "If checked, show frequency dropdown: Weekly, Monthly, Yearly",
+        "Recurring transactions stored with isRecurring: true and frequency field",
+        "Recurring template stored in separate localStorage key",
+        "'Next occurrence' date calculated and displayed",
+        "Verify in browser: create recurring transaction, template saves"
+      ],
+      "priority": 32,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-033",
+      "title": "Recurring Transactions - Auto-generation",
+      "description": "As a user, I want recurring transactions to be automatically generated.",
+      "acceptanceCriteria": [
+        "On app load, check if new recurring instances are due",
+        "Generate transaction instances for any past due dates",
+        "Generated transactions appear in list with 'recurring' badge/icon",
+        "Recurring templates viewable in separate section or with filter",
+        "Edit template: changes apply to future instances only",
+        "Delete template: option to keep or delete generated instances",
+        "Verify in browser: reload app, due recurring transactions auto-generate"
+      ],
+      "priority": 33,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-034",
+      "title": "Settings Panel - Currency and Date Format",
+      "description": "As a user, I want to customize currency and date display settings.",
+      "acceptanceCriteria": [
+        "Settings accessible from header (gear icon) or navigation",
+        "Currency dropdown: USD, EUR, GBP, JPY, CAD, AUD, INR",
+        "Currency symbol applied throughout app",
+        "Date format dropdown: MM/DD/YYYY or DD/MM/YYYY",
+        "Date format applied to all date displays",
+        "Settings saved to localStorage",
+        "Verify in browser: change settings, all displays update"
+      ],
+      "priority": 34,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-035",
+      "title": "Settings Panel - Week Start and Reset",
+      "description": "As a user, I want to set week start day and be able to reset all data.",
+      "acceptanceCriteria": [
+        "First day of week dropdown: Sunday or Monday",
+        "'Reset All Data' button with confirmation dialog",
+        "Confirmation requires typing 'RESET' or clicking confirm twice",
+        "Reset clears all localStorage data and reloads app",
+        "Settings persist across browser sessions",
+        "Verify in browser: reset works with proper confirmation"
+      ],
+      "priority": 35,
+      "passes": true,
+      "notes": ""
+    }
+  ]
+}
